@@ -4,11 +4,13 @@
  */
 "use client";
 
-import React from 'react';
-import Image from 'next/image';
 import { ArrowDown } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import Ticker from '@/components/ui/ticker';
+
 import styles from './styles/HeroSection.module.css';
 
 interface HeroSectionProps {

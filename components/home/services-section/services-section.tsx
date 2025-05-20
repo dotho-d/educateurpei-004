@@ -2,7 +2,7 @@
  * services-section.tsx
  * Composant représentant la section des services proposés sur la page d'accueil
  */
-import React from 'react';
+
 import { 
   MessageSquare, 
   Calendar, 
@@ -11,14 +11,17 @@ import {
   Phone, 
   Clock 
 } from 'lucide-react';
+import React, { forwardRef } from 'react';
+
 import ServiceCard from '@/components/home/service-card';
+
 import styles from './styles/ServicesSection.module.css';
 
 /**
  * Composant de la section des services
  * Affiche les différents services proposés sous forme de grille de cartes
  */
-const ServicesSection: React.FC = () => {
+const ServicesSection = forwardRef<HTMLElement, {}>(function ServicesSection(props, ref) {
   // Données des services
   const services = [
     {
@@ -60,7 +63,7 @@ const ServicesSection: React.FC = () => {
   ];
 
   return (
-    <section id="services" className={styles.section}>
+    <section ref={ref} id="services" className={styles.section}>
       <div className={styles.container}>
         <div className={styles.titleContainer}>
           <h2 className="typography-h2 mb-4">
@@ -89,6 +92,8 @@ const ServicesSection: React.FC = () => {
       </div>
     </section>
   );
-};
+});
+
+ServicesSection.displayName = 'ServicesSection'; // Important pour React DevTools
 
 export default ServicesSection;

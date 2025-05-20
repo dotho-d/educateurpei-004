@@ -35,12 +35,13 @@ const nextConfig = {
     },
   },
   // Optimisations supplémentaires 
-  // swcMinify est maintenant activé par défaut, donc pas besoin de le spécifier
   poweredByHeader: false,   // Supprime l'en-tête X-Powered-By pour plus de sécurité
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production', // Supprime les console.log en production
+    removeConsole: process.env.NODE_ENV === 'production' 
+      ? { exclude: ['error', 'warn'] } 
+      : false, // Conserve les console.error et console.warn
   },
-  // En-têtes HTTP de sécurité
+  // En-têtes HTTP de sécurité renforcés
   headers: async () => [
     {
       source: '/(.*)',
@@ -63,7 +64,7 @@ const nextConfig = {
         },
         {
           key: 'Permissions-Policy',
-          value: 'camera=(), microphone=(), geolocation=()',
+          value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
         },
         {
           key: 'Content-Security-Policy',
@@ -76,6 +77,10 @@ const nextConfig = {
             connect-src 'self';
             frame-src 'self';
             form-action 'self';
+            base-uri 'self';
+            object-src 'none';
+            frame-ancestors 'none';
+            upgrade-insecure-requests;
           `.replace(/\s+/g, ' ').trim(),
         },
         {

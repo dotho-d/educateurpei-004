@@ -2,20 +2,23 @@
  * tarifs-section.tsx
  * Composant représentant la section des tarifs proposés sur la page d'accueil
  */
-import React from 'react';
-import Link from 'next/link';
+
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import React, { forwardRef } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import styles from './styles/TarifsSection.module.css';
 
 /**
  * Composant de la section des tarifs
  * Affiche les différents tarifs proposés sous forme de cartes
  */
-const TarifsSection: React.FC = () => {
+const TarifsSection = forwardRef<HTMLElement, {}>(function TarifsSection(props, ref) {
   return (
-    <section id="tarifs" className={styles.section}>
+    <section ref={ref} id="tarifs" className={styles.section}>
       <div className={styles.container}>
         <div className={styles.titleContainer}>
           <h2 className="typography-h2 mb-4">
@@ -116,6 +119,8 @@ const TarifsSection: React.FC = () => {
       </div>
     </section>
   );
-};
+});
+
+TarifsSection.displayName = 'TarifsSection'; // Important pour React DevTools
 
 export default TarifsSection;

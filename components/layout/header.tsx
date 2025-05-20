@@ -5,16 +5,18 @@
  */
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Menu, X, Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import styles from "./styles/Header.module.css";
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
+
+import { Button } from "@/components/ui/button";
 import { useFontSizes } from "@/hooks/useFontSizes";
 import { useScrollLock } from "@/hooks/useScrollLock";
+import { cn } from "@/lib/utils";
+
+import styles from "./styles/Header.module.css";
 
 // Liens de navigation pour la page d'accueil
 const navLinks = [
@@ -28,6 +30,7 @@ const navLinks = [
  * Composant Header
  * Affiche l'en-tête de l'application avec le logo, la navigation et les contrôles de thème
  * Inclut une version responsive pour mobile avec menu hamburger
+ * Amélioré pour l'accessibilité avec attributs ARIA
  */
 export default function Header() {
   // États pour gérer le menu mobile et le défilement
@@ -42,10 +45,25 @@ export default function Header() {
   const [headerHeight, setHeaderHeight] = useState('5rem');
   // Utiliser le hook de verrouillage du défilement
   const { lockScroll, unlockScroll } = useScrollLock();
+  // État pour suivre le hash actuel
+  const [currentHash, setCurrentHash] = useState('');
 
   // Effet séparé pour s'assurer que mounted est défini immédiatement
   useEffect(() => {
     setMounted(true);
+    
+    // Récupérer le hash initial de l'URL
+    if (typeof window !== 'undefined') {
+      setCurrentHash(window.location.hash.substring(1));
+      
+      // Ajouter un écouteur pour les changements de hash
+      const handleHashChange = () => {
+        setCurrentHash(window.location.hash.substring(1));
+      };
+      
+      window.addEventListener('hashchange', handleHashChange);
+      return () => window.removeEventListener('hashchange', handleHashChange);
+    }
   }, []);
 
   // Effet pour gérer le défilement et la taille de l'écran
@@ -134,6 +152,9 @@ export default function Header() {
       
       // Mettre à jour l'URL sans recharger la page
       window.history.pushState(null, '', `#${targetId}`);
+      
+      // Mettre à jour l'état du hash courant
+      setCurrentHash(targetId);
     }
   };
 
@@ -146,11 +167,11 @@ export default function Header() {
 
   // Élément à rendre
   return (
-    <header className={headerClasses}>
+    <header className={headerClasses} role="banner">
       <div className={styles.container}>
         {/* Logo */}
         <div className={styles.logoWrapper}>
-          <Link href="/" className={cn(styles.logo, "text-3xl sm:text-4xl logo-text")}>
+          <Link href="/" className={cn(styles.logo, "text-3xl sm:text-4xl logo-text")} aria-label="Accueil Éducateur péï">
             Éducateur péï
           </Link>
         </div>
@@ -159,13 +180,14 @@ export default function Header() {
           Navigation desktop 
           - Affichage géré par CSS: visible uniquement au-dessus de 1024px
         */}
-        <nav className={styles.desktopNav}>
+        <nav className={styles.desktopNav} aria-label="Navigation principale">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
               className={cn("typography-nav", styles.navLink, "nav-link")}
               onClick={(e) => handleSmoothScroll(e, link.href.substring(1))}
+              aria-current={link.href.substring(1) === currentHash ? 'page' : undefined}
             >
               {link.label}
             </a>
@@ -219,6 +241,8 @@ export default function Header() {
             onClick={toggleMenu} 
             className={styles.iconButton}
             aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -228,12 +252,16 @@ export default function Header() {
       {/* Menu mobile en mode fit-content sans défilement */}
       {isMenuOpen && (
         <div 
+          id="mobile-menu"
           className={cn(
             styles.mobileMenu, 
             "animate-fadeIn", 
             theme === "dark" ? styles.darkMobileMenu : styles.lightMobileMenu
           )}
           style={{ top: headerHeight }}
+          role="navigation" 
+          aria-label="Menu principal mobile"
+          aria-hidden={!isMenuOpen}
         >
           <div className={styles.menuContainer}>
             {navLinks.map((link) => (
@@ -243,6 +271,7 @@ export default function Header() {
                 className={styles.menuLink}
                 style={{ fontSize: fontSizes.navLink }}
                 onClick={(e) => handleSmoothScroll(e, link.href.substring(1))}
+                aria-current={link.href.substring(1) === currentHash ? 'page' : undefined}
               >
                 {link.label}
               </a>

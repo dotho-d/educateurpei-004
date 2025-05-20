@@ -2,19 +2,22 @@
  * cta-section.tsx
  * Composant de call-to-action en bas de la page d'accueil, invitant à prendre contact
  */
-import React from 'react';
-import Link from 'next/link';
+
 import { Calendar } from 'lucide-react';
+import Link from 'next/link';
+import React, { forwardRef } from 'react';
+
 import { Button } from '@/components/ui/button';
+
 import styles from './styles/CTASection.module.css';
 
 /**
  * Composant Call-to-Action
  * Affiche un appel à l'action pour contacter le service
  */
-const CTASection: React.FC = () => {
+const CTASection = forwardRef<HTMLElement, {}>(function CTASection(props, ref) {
   return (
-    <section id="contact" className={styles.section}>
+    <section ref={ref} id="contact" className={styles.section}>
       <div className={styles.container}>
         <div className={styles.ctaCard}>
           <h2 className="typography-h2 mb-4">
@@ -40,6 +43,8 @@ const CTASection: React.FC = () => {
       </div>
     </section>
   );
-};
+});
+
+CTASection.displayName = 'CTASection'; // Important pour React DevTools
 
 export default CTASection;
